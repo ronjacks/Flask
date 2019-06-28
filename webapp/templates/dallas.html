@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block content %}
+   <div class="dallas">
+     <h2>Dallas Crime Analysis</h2>
+     <p>This article is about Dallas crime analysis. We will look at the top 3 crimes data and extract as much information as possible which will not only help law enforcement but also provide insight to general public about safety.</p>
+		<h1> Data souces and assumptions </h1>
+			<p> This section describes data sources and its properties. Dallas crime data is available publicly at following link : 
+			<li><a href="https://www.dallasopendata.com/Public-Safety/Police-Incident-location-and-pertinentinformation/v3r6-776m">Dallas Crime Download</a></li> </p>
+	 
+		<h1>Dallas Crime Graphs<h1>
+			<h4>Hourly Trend  </h4>
+				<p> Let us see the hourly trend of crimes </p>
+				<img src="{{ img_df_hourly }}" alt="img_df_hourly">
+				<p> This graph shows that when the time is 18 Hours then maximum number of crimes take place. Hours between 1-7 have the least number of criminal activities going on. This plot depicts 3 am to 10 am being the safest time in Dallas, while </p>
+			<h4>District Council </h4>
+				<p>Dallas has 14 council districts in the city, let us visualize top crimes count for each districts</p>
+				<img src="{{ img_df_council }}" alt="img_df_council">
+				<p> As per above graph Council D7 takes the lead for severe crime. Let us put the same data in a heatmap</p>
+				<img src="{{ img_council_heatmap }}" alt="img_council_heatmap">
+			<h4> Police Divisions</h4>
+				<p>There are 8 divisions of Dallas as per Dallas police website. </p>
+				<img src="{{ img_df_division }}" alt="img_df_division">
+				<p>As seen by the graph Southeast division is victim of most crimes while north central is comparatively safer in terms of severe crimes.</p>
+			<h4> Monthly Crime</h4>
+				<p>Is there any impact of weather on crime. Let us explore </p>
+				<img src="{{ img_df_month }}" alt="img_df_month">
+				<p> </p>
+			<h4> Locations </h4>
+				<p> This is important for everyone to understand which locations are safer as compared to others. In this era of internet when one can buy and sell via different sites, which location will you choose to pick up from a seller if requested ?</p>
+				<img src="{{ img_df_type_of_loc }}" alt="img_df_type_of_loc">
+				<p>This graph reveals that street, apartment complex and parking lot are the most dangerous place to be in case of crime prediction.</p>
+		<h1> Machine learning for Dallas Crime</h1>
+			<p> Machine learning is a method of data analysis that automates analytical model building. As we have preformed a general analysis of the data, now let us create analytical model for our problem. 
+				30 percent of data is used for testing purpose while 70 percent is used for training of model. The important columns considered in this model are 'Type_of_Incident_Bucket','rank','severity','Zip Code','Type_of_Location','Month of Occurence','Hour'</p>
+			<h4> SVM Model</h4>
+				<p> In machine learning, support-vector machines (SVMs, also support-vector networks) are supervised learning models with associated learning algorithms that analyze data used for classification and regression analysis.The SVM algorithm offers a choice of kernel functions for performing its processing. Basically, mapping data into a higher dimensional space is called kernelling. The mathematical function used for the transformation is known as the kernel function, and can be of different types, such as:
+					1.Linear
+					2.Polynomial
+					3.Radial basis function (RBF)
+					4.Sigmoid
+					Each of these functions has its characteristics, its pros and cons, and its equation, but as there's no easy way of knowing which function performs best with any given dataset, we usually choose different functions in turn and compare the results. Let's just use the default, RBF (Radial Basis Function).</p>
+				<img src="{{ img_confusion_svm }}" alt="img_confusion_svm">
+				<p> Confusion matrix is visual representation of how good XGBoot model is doing in predicting which crime belong to which severity level class. Severity level 3 performing the best as compared to severity level 2 or level 1.</p>
+			<h4> XGBOOST Model</h4>
+				<p> XGBoost is an optimized distributed gradient boosting library designed to be highly efficient, flexible and portable. It implements machine learning algorithms under the Gradient Boosting framework. XGBoost provides a parallel tree boosting (also known as GBDT, GBM) that solve many data science problems in a fast and accurate way. The same code runs on major distributed environment (Hadoop, SGE, MPI) and can solve problems beyond billions of examples.</p>
+				
+				<img src="{{ img_confusion_XGB }}" alt="img_confusion_XGB">
+				
+				<p> It is easy to visualize that SVM model is very good at predicting severity 3 crimes. This comes from the fact that in our chosen data set number of crimes mostly are of severity level 3 so the model is able to train for its prediction. For severity level 2 most of the classification is correct but for severity level 1 crime SVM model is not able to classify correctly. Since they are low in numbers therefore the overall score of model accuracy is still high. The diagonal line represent true positive by SVM model and dark blue color shows number of records in each class. This also gives us visual of how many severity 1 crimes are label as severity 2 (131) and severity 3(4) crimes. Similarly only 7 crimes of severity 2 crimes are label as severity 3 while for severity 3 all are predicted correctly</p>
+				
+		<h1> Spatial Analysis </h1>
+			<p> In this section we will use folium maps to locate crime in Dallas. This gives a better understanding of which locations are more prone to severe crimesp>
+			<h4> Choropleth Dallas Crime Map</h4>
+				
+				 <p> A Choropleth map is a thematic map in which areas are shaded or patterned in proportion to the measurement of the statistical variable being displayed on the map, such as population density or per-capita income. The choropleth map provides an easy way to visualize how a measurement varies across a geographic area or it shows the level of variability within a region. Dallas crime is plotted below on choropleth map. And now to create a Choropleth map, we will use the choropleth method with the following main parameters:
+					1. geo_data, which is the GeoJSON file.
+					2. data, which is the dataframe containing the data.
+					3. columns, which represents the columns in the dataframe that will be used to create the Choropleth map.
+					4. key_on, which is the key or variable in the GeoJSON file that contains the name of the variable of interest. To determine that, you will need to open the GeoJSON file using any text editor and note the name of the key or variable that contains the name of the countries, since the countries are our variable of interest. In this case, dist_name is the key in the GeoJSON file that contains the name of the countries.</p>
+				 <iframe src="{{ url_for('dallas_crime_choropleth') }}" style="border-style: none;width: 100%; height: 500px; "></iframe>
+				<p> This gives us a better visualization of Severe crimes of Dallas location wise. The dark red places have high crime rate and lighter color districts have low crime rate.</p>
+			<h4> Severity level one crimes</h4>	
+				<iframe src="{{ url_for('dallas_severity1_crime_map') }}" style="border-style: none;width: 100%; height: 500px;" ></iframe>
+				<p> Murder related crimes are considered as severity level one crime in this article. You can zoom in and out to visualize different locations of Dallas where such crimes have been reported. </p>
+			<h4> Severity level two crimes</h4>
+				<iframe src="{{ url_for('dallas_severity2_crime_map') }}" style="border-style: none;width: 100%; height: 500px;"></iframe>
+				<p> Deadly conduct is labelled severity level two crime, the above interactive map shows latitude and longitude of Dallas where deadly conduct have been reported. </p>
+			<h4> Severity level three crimes</h4>
+				<iframe src="{{ url_for('dallas_severity3_crime_map') }}" style="border-style: none;width: 100%; height: 500px;"></iframe>
+				<p> Assault related crimes are grouped into severity level three. Above map is visual representation of assualt related crimes data of Dallas.</p>
+	
+	 
+   </div>
+ {% endblock %}
